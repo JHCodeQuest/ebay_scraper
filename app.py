@@ -1,4 +1,5 @@
 #Import Dependencies
+import re
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -143,32 +144,37 @@ while True:
         print('No more pages to scrape')
         break
 
-print(f'Collected {len(items_list)} listings')
 # Turn list into DataFrame
 items_df = pd.DataFrame(items_list)
 
 # Define forbidden terms
 forbidden_terms = [
     'refurbished',
+    'iphone 11',
     'iphone 12',
+    'iphone 13',
+    'iphone 14 pro',
+    'iphone 14 plus',
+    'iphone 15',
+    'iphone 16',
+    'iphone 17',
     'parts',
     'damaged',
     'locked',
-    'pro',
-    'mini',
-    '256 gb',
-    '512 gb',
-    'verizon',
-    'at&t', 
-    't-mobile',
-    'cricket',
-    'metro',
-    'boost',
+    'case only',
+    'phone case',
+    'screen protector',
+    'replacement screen',
+    'charger only',
+    'box only',
+    'dummy phone',
+    'not working',
     'read description'
 ]
 
 # Create a boolean mask for filtering out forbidden terms
-mask = ~items_df['Title'].str.lower().str.contains(r'\b(?:' + '|'.join(forbidden_terms) + r')\b')
+forbidden_pattern = r'\b(?:' + '|'.join(re.escape(term) for term in forbidden_terms) + r')\b'
+mask = ~items_df['Title'].str.lower().str.contains(forbidden_pattern)
 
 # Apply the mask to filter the DataFrame
 filtered_df = items_df[mask]
