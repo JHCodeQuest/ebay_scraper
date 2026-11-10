@@ -106,40 +106,42 @@ while True:
     params['_pgn'] = page_number
     
     # Send GET request to eBay with the defined parameters
-    response  = requests.get(EBAY_SEARCH_URL, params=params)
+    response = requests.get(EBAY_SEARCH_URL, params=params, timeout=20)
+    response.raise_for_status()
     html_content = response.text # Get the HTML content of the page
     
     # Parse the HTML content using BeautifulSoup
     soup = BeautifulSoup(html_content, 'html.parser')
           
-    # Find the next button
-    next_button = soup.find('button', class_='pagination__next', type='next')
-
-    # Check if the next button is disabled
-    if next_button and next_button.get('aria-disabled') == 'true':
-        print('No more pages pages to scrape')
+    items = soup.find_all('div', class_='s-item__wrapper clearfix')
+    listings = items[2:]
+    if not listings:
+        print('No listings found; stopping')
         break
-    else:
-        # Extract items
-        items = soup.find_all('div', class_='s-item__wrapper clearfix')
 
-        # Extract Listings
-        for item in items [2:]:
-            title = item.find('div', class_='s-item__title').text
-            price = item.find('span', class_='s-item__price').text
-            link = item.find('a', class_='s-item__link')['href'].split('?')[0]
-            image_url = item.find('div', class_='s-item__image-wrapper image-treatment').find('img').get('src','No image URL')
+    # Extract listings
+    for item in listings:
+        title = item.find('div', class_='s-item__title').text
+        price = item.find('span', class_='s-item__price').text
+        link = item.find('a', class_='s-item__link')['href'].split('?')[0]
+        image_url = item.find('div', class_='s-item__image-wrapper image-treatment').find('img').get('src','No image URL')
 
-            # Define each item as a dictionary
-            item_dict = {
-                'Title': title,
-                'Price': price,
-                'Link': link,
-                'Image Link': image_url
-            }
+        # Define each item as a dictionary
+        item_dict = {
+            'Title': title,
+            'Price': price,
+            'Link': link,
+            'Image Link': image_url
+        }
 
-            # Append the dictionary to the list
-            items_list.append(item_dict)
+        # Append the dictionary to the list
+        items_list.append(item_dict)
+
+    # Find the next button and stop if there is no next page
+    next_button = soup.find('button', class_='pagination__next', type='next')
+    if not next_button or next_button.get('aria-disabled') == 'true':
+        print('No more pages to scrape')
+        break
 
 len(items_list)
 # Turn list into DataFrame
