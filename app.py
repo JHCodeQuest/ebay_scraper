@@ -143,7 +143,7 @@ while True:
         print('No more pages to scrape')
         break
 
-len(items_list)
+print(f'Collected {len(items_list)} listings')
 # Turn list into DataFrame
 items_df = pd.DataFrame(items_list)
 
