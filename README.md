@@ -1,21 +1,14 @@
-This project is a web scraper built in Python to extract product listings from eBay. The data is visualized using a Flask-based web application.
+# iPhone 14 Price Research
 
-📋 Features
-	•	Scrapes product titles, prices, and URLs from eBay.
-	•	Flask dashboard for data visualization.
-	•	Real-time data fetching and display.
+A local Flask app for browsing saved iPhone 14 listing data. It uses the included CSV sample and does not contact eBay or require an account.
 
-💻 Tech Stack
-	•	Python
-	•	Flask
-	•	BeautifulSoup
-	•	HTML/CSS
+## Run locally
 
- ``git clone https://github.com/yourusername/ebay_scraper.git
-cd ebay_scraper``
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python app.py
+```
 
-``python -m pip install -r requirements.txt``
-
-``python app.py``
-
-![image](https://github.com/user-attachments/assets/4232e248-7c9b-4c8f-815d-3b704d49b20b)
+Open http://127.0.0.1:5000 in your browser. The displayed listings and prices are a static snapshot, not live sold-price results.

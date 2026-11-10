@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iphone 14 Data</title>
+    <title>iPhone 14 Price Research</title>
 </head>
 <body>
-    <h1>iphone 14 Data</h1>
-    <table border="1">
-        <tr>
-            {% for header in headers %}
-                <th>{{ header }}</th>
-            {% endfor %}
-        </tr>
-        {% for row in data %}
+    <h1>iPhone 14 Price Research</h1>
+    <p>Sample data from a saved CSV snapshot. Listings and prices are not live.</p>
+    {% if data %}
+        <table border="1">
             <tr>
-                {% for item in row %}
-                    <td>{{ item }}</td>
+                {% for header in headers %}
+                    <th>{{ header }}</th>
                 {% endfor %}
             </tr>
-        {% endfor %}
-    </table>
+            {% for row in data %}
+                <tr>
+                    {% for item in row %}
+                        <td>{{ item }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No sample listings are available.</p>
+    {% endif %}
 </body>
 </html>

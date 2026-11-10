@@ -1,4 +1,1 @@
 Flask
-beautifulsoup4
-pandas
-requests
