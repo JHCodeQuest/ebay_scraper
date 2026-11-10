@@ -14,7 +14,7 @@ This project is a web scraper built in Python to extract product listings from e
  ``git clone https://github.com/yourusername/ebay_scraper.git
 cd ebay_scraper``
 
-``pip install Flask BeautifulSoup4 Pandas``
+``python -m pip install -r requirements.txt``
 
 ``python app.py``
 
