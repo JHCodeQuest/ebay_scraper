@@ -63,7 +63,7 @@ ebay_filters = {
 }
 
 # Define the base URL for the eBay search
-url = "https://www.ebay.com/sch/i.html"
+EBAY_SEARCH_URL = "https://www.ebay.com/sch/i.html"
 
 # Define the query parameters for the search request
 params = {
@@ -74,7 +74,7 @@ params = {
     '_udlo': '200',  # Minimum price.
     '_udhi': '400',  # Maximum price.
     '_dcat': ebay_filters["directories"]["No Directory"],  # Filter by directory ID; "Consumer Electronics".
-    '_sacat': ebay_filters["categories"]["No Category"],  # Filter by category ID; "Cell Phones & Smartphones".
+    '_sacat': ebay_filters["categories"]["Cell Phones & Smartphones"],  # Filter by category ID.
     '_sop': ebay_filters["sort_order"]["Time: newly listed"],  # Sort by "Time: newly listed"
     'LH_Sold': '1',  # Only sold listings (='1').
     'LH_Complete': '1',  # Only completed listings (='1').
@@ -88,7 +88,7 @@ params = {
 }
 
 # Create a prepared request
-request = requests.Request('GET', url, params=params)
+request = requests.Request('GET', EBAY_SEARCH_URL, params=params)
 prepared_request = request.prepare()
 print(prepared_request.url)
 
@@ -106,7 +106,7 @@ while True:
     params['_pgn'] = page_number
     
     # Send GET request to eBay with the defined parameters
-    response  = requests.get(url, params=params)
+    response  = requests.get(EBAY_SEARCH_URL, params=params)
     html_content = response.text # Get the HTML content of the page
     
     # Parse the HTML content using BeautifulSoup
