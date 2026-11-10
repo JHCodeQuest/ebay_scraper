@@ -13,3 +13,5 @@ env/
 .mypy_cache/
 .ruff_cache/
 instance/
+
+/output/*.png
