@@ -40,13 +40,17 @@ def display_csv():
     with SAMPLE_DATA_FILE.open(newline="", encoding="utf-8-sig") as sample_file:
         reader = csv.DictReader(sample_file)
         headers = reader.fieldnames or []
-        data = [
-            [row.get(header, "") or "" for header in headers]
-            for row in reader
+        rows = list(reader)
+        listings = [
+            row for row in rows
             if not FORBIDDEN_PATTERN.search(row.get("Title", "") or "")
         ]
+        data = [
+            [row.get(header, "") or "" for header in headers]
+            for row in listings
+        ]
 
-    return render_template("index.html", headers=headers, data=data)
+    return render_template("index.html", headers=headers, data=data, listings=listings)
 
 
 if __name__ == "__main__":
