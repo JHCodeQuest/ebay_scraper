@@ -525,7 +525,10 @@
         let activePriceBand = null;
 
         function parsePrice(value) {
-            const parsedPrice = Number(value.replace(/[^\d.-]/g, ""));
+            const numericValue = value.replace(/[^\d.-]/g, "");
+            if (!numericValue) return null;
+
+            const parsedPrice = Number(numericValue);
             return Number.isFinite(parsedPrice) ? parsedPrice : null;
         }
 
@@ -541,7 +544,7 @@
             return price !== null && price >= band.min && price < band.max;
         }
 
-        function renderPriceChart(titleMatches) {
+        function renderPriceChart(titleMatches, focusBandIndex = null) {
             const counts = priceBands.map((band) => titleMatches.filter((card) =>
                 priceIsInBand(parsePrice(card.dataset.price), band)
             ).length);
@@ -563,6 +566,7 @@
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "chart-column";
+                button.dataset.bandIndex = index;
                 button.setAttribute("aria-pressed", String(selected));
                 button.setAttribute("aria-label", `${band.description}: ${count} listings${selected ? ", selected" : ", select to filter"}`);
 
@@ -584,10 +588,14 @@
                 button.append(countLabel, plot, label);
                 button.addEventListener("click", () => {
                     activePriceBand = selected ? null : band;
-                    updateDashboard();
+                    updateDashboard(index);
                 });
                 chartColumns.append(button);
             });
+
+            if (focusBandIndex !== null) {
+                chartColumns.querySelector(`[data-band-index="${focusBandIndex}"]`)?.focus();
+            }
 
             chartSummary.textContent = `${titleMatches.length} matching ${titleMatches.length === 1 ? "listing" : "listings"}`;
             chartNote.textContent = activePriceBand
@@ -595,10 +603,10 @@
                 : "Select a bar to filter listings in that price range.";
         }
 
-        function updateDashboard() {
+        function updateDashboard(focusBandIndex = null) {
             const query = listingSearch.value.trim().toLowerCase();
             const titleMatches = listingCards.filter((card) => card.dataset.title.includes(query));
-            renderPriceChart(titleMatches);
+            renderPriceChart(titleMatches, focusBandIndex);
             const visibleCards = titleMatches.filter((card) => {
                 if (!activePriceBand) return true;
                 return priceIsInBand(parsePrice(card.dataset.price), activePriceBand);

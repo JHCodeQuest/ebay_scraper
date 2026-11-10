@@ -1,6 +1,6 @@
-# iPhone 14 Price Research
+# Product Research Dashboard
 
-A local Flask app for browsing saved iPhone 14 listing data. It uses the included CSV sample and does not contact eBay or require an account.
+A local Flask Product Research Dashboard for exploring a saved eBay dataset of iPhone 14 listings. It uses the included CSV and does not scrape eBay or require an account.
 
 ## Run locally
 
