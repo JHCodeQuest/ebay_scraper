@@ -3,23 +3,664 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iphone 14 Data</title>
+    <meta name="theme-color" content="#f1f3ef">
+    <meta name="description" content="A sample dashboard for comparing saved iPhone 14 listing prices.">
+    <title>iPhone 14 | Resale Index</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --canvas: #f1f3ef;
+            --paper: #fff;
+            --ink: #202821;
+            --muted: #68746d;
+            --line: #dce2dc;
+            --green: #2f7459;
+            --green-dark: #1d513d;
+            --coral: #c74e37;
+            --yellow: #e7c566;
+            --serif: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+            --sans: "Trebuchet MS", "Segoe UI", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background-color: var(--canvas);
+            background-image: linear-gradient(rgba(32, 40, 33, .025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(32, 40, 33, .025) 1px, transparent 1px);
+            background-size: 24px 24px;
+            color: var(--ink);
+            font-family: var(--sans);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a { color: inherit; }
+        .shell { width: min(1180px, calc(100% - 48px)); margin: 0 auto; }
+
+        .topbar {
+            min-height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .wordmark {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-decoration: none;
+        }
+
+        .wordmark-mark {
+            width: 27px;
+            height: 27px;
+            display: grid;
+            place-items: center;
+            background: var(--green);
+            color: #fff;
+            font-family: var(--serif);
+            font-size: 15px;
+        }
+
+        .topbar-note, .sample-badge, .eyebrow, .metric-label, .listing-kicker, .section-index {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .topbar-note { color: var(--muted); }
+
+        .sample-badge {
+            padding: 8px 10px;
+            border: 1px solid #d5b958;
+            background: #f8efcf;
+            color: #675217;
+            white-space: nowrap;
+        }
+
+        main { padding: 42px 0 64px; }
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin: 0 0 13px;
+            color: var(--green);
+        }
+
+        .eyebrow-mark { width: 7px; height: 7px; background: var(--coral); transform: rotate(45deg); }
+        .heading-row { display: flex; justify-content: space-between; align-items: end; gap: 24px; }
+
+        h1 {
+            margin: 0;
+            font-family: var(--serif);
+            font-size: 44px;
+            font-weight: 500;
+            line-height: 1.08;
+        }
+
+        .intro { max-width: 560px; margin: 11px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+        .snapshot-note {
+            max-width: 220px;
+            padding: 0 0 3px 15px;
+            border-left: 2px solid var(--yellow);
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .snapshot-note strong { display: block; color: var(--ink); font-size: 12px; }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin: 34px 0 36px;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .metric { min-height: 94px; padding: 16px 22px 15px 0; }
+        .metric + .metric { padding-left: 22px; border-left: 1px solid var(--line); }
+        .metric-label { display: block; margin-bottom: 9px; color: var(--muted); }
+        .metric-value { font-family: var(--serif); font-size: 27px; line-height: 1; }
+        .metric:first-child .metric-value { color: var(--green-dark); }
+
+        .distribution-panel {
+            margin: 0 0 36px;
+            padding: 18px 20px 13px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--paper);
+        }
+
+        .distribution-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+        .distribution-heading .section-index { margin-bottom: 6px; }
+        .distribution-heading .section-title { font-size: 22px; }
+        .distribution-summary { margin: 0; color: var(--muted); font-size: 11px; }
+        .chart-frame { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; height: 176px; }
+
+        .chart-axis {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 18px 0 26px;
+            color: var(--muted);
+            font-size: 9px;
+            text-align: right;
+        }
+
+        .chart-columns { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; height: 100%; }
+
+        .chart-column {
+            display: grid;
+            min-width: 0;
+            height: 100%;
+            grid-template-rows: 18px minmax(0, 1fr) 26px;
+            padding: 0 3px;
+            border: 0;
+            border-radius: 3px;
+            background: transparent;
+            color: var(--ink);
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .chart-column:hover, .chart-column[aria-pressed="true"] { background: #f0f5f2; }
+        .chart-column:focus-visible { outline: 2px solid var(--green); outline-offset: 1px; }
+        .chart-count { color: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; text-align: center; }
+
+        .chart-plot {
+            display: flex;
+            height: 100%;
+            align-items: flex-end;
+            justify-content: center;
+            border-bottom: 1px solid var(--line);
+            background: repeating-linear-gradient(to top, transparent 0, transparent calc(25% - 1px), #e8ece8 calc(25% - 1px), #e8ece8 25%);
+        }
+
+        .chart-bar {
+            width: min(42px, 72%);
+            min-height: 0;
+            border-radius: 3px 3px 0 0;
+            background: #5a9fb1;
+            transition: height 180ms ease, background-color 180ms ease;
+        }
+
+        .chart-column:hover .chart-bar, .chart-column[aria-pressed="true"] .chart-bar { background: var(--coral); }
+        .chart-label { align-self: end; color: var(--muted); font-size: 10px; text-align: center; white-space: nowrap; }
+        .chart-note { min-height: 15px; margin: 8px 0 0; color: var(--muted); font-size: 10px; }
+
+        .results-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 17px; }
+        .section-index { margin: 0 0 7px; color: var(--coral); }
+        h2.section-title { margin: 0; font-family: var(--serif); font-size: 25px; font-weight: 500; }
+        .results-count { margin: 0; color: var(--muted); font-size: 12px; }
+
+        .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+        .search-wrap { position: relative; flex: 1; max-width: 390px; }
+
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            left: 13px;
+            width: 15px;
+            height: 15px;
+            border: 1.5px solid var(--muted);
+            border-radius: 50%;
+            transform: translateY(-60%);
+        }
+
+        .search-icon::after {
+            position: absolute;
+            right: -5px;
+            bottom: -3px;
+            width: 6px;
+            height: 1.5px;
+            background: var(--muted);
+            content: "";
+            transform: rotate(48deg);
+        }
+
+        input, select {
+            height: 42px;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            background: var(--paper);
+            color: var(--ink);
+            font: inherit;
+            font-size: 12px;
+        }
+
+        input { width: 100%; padding: 0 13px 0 39px; }
+        select { min-width: 178px; padding: 0 34px 0 12px; }
+        input:focus, select:focus, a:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+        .listing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+
+        .listing-card {
+            min-width: 0;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--paper);
+            transition: border-color 160ms ease, transform 160ms ease;
+        }
+
+        .listing-card:hover { border-color: #9db6a8; transform: translateY(-2px); }
+        .listing-card[hidden], .empty-state[hidden] { display: none; }
+
+        .listing-photo {
+            position: relative;
+            display: grid;
+            aspect-ratio: 1.55 / 1;
+            place-items: center;
+            overflow: hidden;
+            border-bottom: 1px solid var(--line);
+            background: #fafbf9;
+            text-decoration: none;
+        }
+
+        .listing-photo img {
+            width: 100%;
+            height: 100%;
+            padding: 16px;
+            object-fit: contain;
+            transition: transform 220ms ease;
+        }
+
+        .listing-card:hover .listing-photo img { transform: scale(1.035); }
+
+        .listing-photo.image-missing::after {
+            color: var(--muted);
+            content: "IMAGE UNAVAILABLE";
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .12em;
+        }
+
+        .listing-number {
+            position: absolute;
+            top: 11px;
+            left: 11px;
+            display: grid;
+            width: 27px;
+            height: 27px;
+            place-items: center;
+            background: var(--ink);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .listing-info { padding: 15px 16px 14px; }
+        .listing-kicker { margin: 0 0 8px; color: var(--green); font-size: 9px; }
+        .listing-title { min-height: 42px; margin: 0; font-size: 14px; font-weight: 600; line-height: 1.45; }
+
+        .listing-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #edf0ec;
+        }
+
+        .listing-price { color: var(--ink); font-family: var(--serif); font-size: 23px; white-space: nowrap; }
+
+        .listing-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--green-dark);
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 3px;
+            white-space: nowrap;
+        }
+
+        .listing-link span { color: var(--coral); font-size: 16px; }
+        .empty-state { padding: 42px 18px; border: 1px dashed #b9c5bc; color: var(--muted); text-align: center; }
+
+        .footer-note {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 35px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 820px) {
+            .listing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 560px) {
+            .shell { width: min(calc(100% - 30px), 430px); }
+            .topbar { min-height: 60px; }
+            .topbar-note { display: none; }
+            main { padding-top: 30px; }
+            .heading-row { align-items: start; flex-direction: column; gap: 15px; }
+            h1 { font-size: 38px; }
+            .snapshot-note { max-width: none; }
+            .metrics { margin: 25px 0 28px; }
+            .metric { min-height: 80px; padding: 13px 8px 12px 0; }
+            .metric + .metric { padding-left: 10px; }
+            .metric-label { min-height: 24px; font-size: 8px; letter-spacing: .08em; }
+            .metric-value { font-size: 21px; }
+            .distribution-panel { margin-bottom: 28px; padding: 14px 9px 10px; }
+            .distribution-heading { align-items: start; flex-direction: column; gap: 5px; }
+            .distribution-heading .section-title { font-size: 20px; }
+            .distribution-summary { font-size: 10px; }
+            .chart-frame { grid-template-columns: 25px minmax(0, 1fr); gap: 5px; height: 158px; }
+            .chart-axis { font-size: 8px; }
+            .chart-columns { gap: 2px; }
+            .chart-column { padding: 0 1px; }
+            .chart-count { font-size: 9px; }
+            .chart-label { font-size: 8px; letter-spacing: 0; }
+            .results-heading { align-items: start; flex-direction: column; gap: 7px; }
+            .toolbar { align-items: stretch; flex-direction: column; }
+            .search-wrap { max-width: none; }
+            select { width: 100%; }
+            .listing-grid { grid-template-columns: 1fr; gap: 12px; }
+            .listing-card { display: grid; grid-template-columns: minmax(110px, 38%) minmax(0, 1fr); }
+            .listing-photo { aspect-ratio: auto; min-height: 160px; border-right: 1px solid var(--line); border-bottom: 0; }
+            .listing-photo img { padding: 8px; }
+            .listing-number { top: 7px; left: 7px; width: 23px; height: 23px; }
+            .listing-info { display: flex; min-width: 0; flex-direction: column; justify-content: center; padding: 12px; }
+            .listing-kicker { font-size: 8px; }
+            .listing-title { min-height: 0; font-size: 13px; }
+            .listing-bottom { align-items: start; flex-direction: column; gap: 7px; margin-top: 10px; padding-top: 9px; }
+            .listing-price { font-size: 21px; }
+            .footer-note { flex-direction: column; gap: 5px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+        }
+    </style>
 </head>
 <body>
-    <h1>iphone 14 Data</h1>
-    <table border="1">
-        <tr>
-            {% for header in headers %}
-                <th>{{ header }}</th>
-            {% endfor %}
-        </tr>
-        {% for row in data %}
-            <tr>
-                {% for item in row %}
-                    <td>{{ item }}</td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="shell">
+        <header class="topbar">
+            <a class="wordmark" href="/" aria-label="Resale Index home">
+                <span class="wordmark-mark">R</span>
+                <span>RESALE INDEX</span>
+            </a>
+            <span class="topbar-note">DEVICE MARKET / 01</span>
+            <span class="sample-badge">Saved sample</span>
+        </header>
+
+        <main>
+            <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> Market notes / handset series</p>
+            <div class="heading-row">
+                <div>
+                    <h1>iPhone 14</h1>
+                    <p class="intro">A closer look at saved standard-model listings, selected for quick price comparison.</p>
+                </div>
+                <div class="snapshot-note">
+                    <strong>Static sample data</strong>
+                    Prices and listings come from the included CSV snapshot. Nothing here updates live.
+                </div>
+            </div>
+
+            <section class="metrics" aria-label="Listing price summary">
+                <div class="metric">
+                    <span class="metric-label">Listings shown</span>
+                    <strong class="metric-value" id="listing-count">{{ listings|length }}</strong>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Median sample price</span>
+                    <strong class="metric-value" id="median-price">--</strong>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Price span</span>
+                    <strong class="metric-value" id="price-span">--</strong>
+                </div>
+            </section>
+
+            <section class="distribution-panel" aria-labelledby="price-chart-title">
+                <div class="distribution-heading">
+                    <div>
+                        <p class="section-index">Price profile / sample</p>
+                        <h2 class="section-title" id="price-chart-title">Listings by price band</h2>
+                    </div>
+                    <p class="distribution-summary" id="chart-summary" aria-live="polite">{{ listings|length }} matching listings</p>
+                </div>
+                <div class="chart-frame">
+                    <div class="chart-axis" id="chart-axis" aria-hidden="true"></div>
+                    <div class="chart-columns" id="chart-columns" role="group" aria-label="Listing count by price band"></div>
+                </div>
+                <p class="chart-note" id="chart-note">Select a bar to filter listings in that price range.</p>
+            </section>
+
+            <section aria-labelledby="results-title">
+                <div class="results-heading">
+                    <div>
+                        <p class="section-index">Collection / 01</p>
+                        <h2 class="section-title" id="results-title">Saved listings</h2>
+                    </div>
+                    <p class="results-count" id="results-summary" aria-live="polite">{{ listings|length }} listings</p>
+                </div>
+
+                <div class="toolbar" role="search">
+                    <label class="search-wrap">
+                        <span class="search-icon" aria-hidden="true"></span>
+                        <input id="listing-search" type="search" placeholder="Search titles" aria-label="Search listing titles">
+                    </label>
+                    <select id="listing-sort" aria-label="Sort listings">
+                        <option value="price-asc">Price: low to high</option>
+                        <option value="price-desc">Price: high to low</option>
+                        <option value="title-asc">Title: A to Z</option>
+                    </select>
+                </div>
+
+                <div class="listing-grid" id="listing-grid">
+                    {% for listing in listings %}
+                        <article class="listing-card" data-title="{{ listing['Title']|lower }}" data-price="{{ listing['Price'] }}">
+                            <a class="listing-photo" href="{{ listing['Link'] }}" target="_blank" rel="noopener noreferrer" aria-label="Open listing: {{ listing['Title'] }}">
+                                {% if listing['Image Link'] %}
+                                    <img src="{{ listing['Image Link'] }}" alt="{{ listing['Title'] }}" loading="lazy">
+                                {% else %}
+                                    <span>Image unavailable</span>
+                                {% endif %}
+                                <span class="listing-number">{{ "%02d"|format(loop.index) }}</span>
+                            </a>
+                            <div class="listing-info">
+                                <p class="listing-kicker">iPhone 14 / saved result</p>
+                                <h3 class="listing-title">{{ listing['Title'] }}</h3>
+                                <div class="listing-bottom">
+                                    <span class="listing-price">{{ listing['Price'] }}</span>
+                                    <a class="listing-link" href="{{ listing['Link'] }}" target="_blank" rel="noopener noreferrer">
+                                        View listing <span aria-hidden="true">&rarr;</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+                <p class="empty-state" id="empty-state" hidden>No sample listings match that search.</p>
+            </section>
+
+            <footer class="footer-note">
+                <span>Sample prices are shown as saved; they may not reflect current availability.</span>
+                <span>Source file: iphone 14.csv</span>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        const listingGrid = document.querySelector("#listing-grid");
+        const listingCards = Array.from(listingGrid.querySelectorAll(".listing-card"));
+        const listingSearch = document.querySelector("#listing-search");
+        const listingSort = document.querySelector("#listing-sort");
+        const listingCount = document.querySelector("#listing-count");
+        const medianPrice = document.querySelector("#median-price");
+        const priceSpan = document.querySelector("#price-span");
+        const resultsSummary = document.querySelector("#results-summary");
+        const emptyState = document.querySelector("#empty-state");
+        const chartAxis = document.querySelector("#chart-axis");
+        const chartColumns = document.querySelector("#chart-columns");
+        const chartSummary = document.querySelector("#chart-summary");
+        const chartNote = document.querySelector("#chart-note");
+        const priceBands = [
+            { label: "$0-249", description: "Under $250", min: 0, max: 250 },
+            { label: "$250-299", description: "$250 to $299", min: 250, max: 300 },
+            { label: "$300-349", description: "$300 to $349", min: 300, max: 350 },
+            { label: "$350-399", description: "$350 to $399", min: 350, max: 400 },
+            { label: "$400+", description: "$400 and over", min: 400, max: Infinity }
+        ];
+        let activePriceBand = null;
+
+        function parsePrice(value) {
+            const numericValue = value.replace(/[^\d.-]/g, "");
+            if (!numericValue) return null;
+
+            const parsedPrice = Number(numericValue);
+            return Number.isFinite(parsedPrice) ? parsedPrice : null;
+        }
+
+        function formatPrice(value) {
+            return new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                maximumFractionDigits: 2
+            }).format(value);
+        }
+
+        function priceIsInBand(price, band) {
+            return price !== null && price >= band.min && price < band.max;
+        }
+
+        function renderPriceChart(titleMatches, focusBandIndex = null) {
+            const counts = priceBands.map((band) => titleMatches.filter((card) =>
+                priceIsInBand(parsePrice(card.dataset.price), band)
+            ).length);
+            const maximum = Math.max(...counts, 1);
+            const axisValues = [maximum, Math.round(maximum * .75), Math.round(maximum * .5), Math.round(maximum * .25), 0]
+                .filter((value, index, values) => values.indexOf(value) === index);
+
+            chartAxis.replaceChildren();
+            for (const value of axisValues) {
+                const tick = document.createElement("span");
+                tick.textContent = value;
+                chartAxis.append(tick);
+            }
+
+            chartColumns.replaceChildren();
+            priceBands.forEach((band, index) => {
+                const count = counts[index];
+                const selected = activePriceBand === band;
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "chart-column";
+                button.dataset.bandIndex = index;
+                button.setAttribute("aria-pressed", String(selected));
+                button.setAttribute("aria-label", `${band.description}: ${count} listings${selected ? ", selected" : ", select to filter"}`);
+
+                const countLabel = document.createElement("span");
+                countLabel.className = "chart-count";
+                countLabel.textContent = count;
+
+                const plot = document.createElement("span");
+                plot.className = "chart-plot";
+                const bar = document.createElement("span");
+                bar.className = "chart-bar";
+                bar.style.height = count ? `${Math.max(3, count / maximum * 100)}%` : "0";
+                plot.append(bar);
+
+                const label = document.createElement("span");
+                label.className = "chart-label";
+                label.textContent = band.label;
+
+                button.append(countLabel, plot, label);
+                button.addEventListener("click", () => {
+                    activePriceBand = selected ? null : band;
+                    updateDashboard(index);
+                });
+                chartColumns.append(button);
+            });
+
+            if (focusBandIndex !== null) {
+                chartColumns.querySelector(`[data-band-index="${focusBandIndex}"]`)?.focus();
+            }
+
+            chartSummary.textContent = `${titleMatches.length} matching ${titleMatches.length === 1 ? "listing" : "listings"}`;
+            chartNote.textContent = activePriceBand
+                ? `Showing ${activePriceBand.description}; select the bar again to clear the filter.`
+                : "Select a bar to filter listings in that price range.";
+        }
+
+        function updateDashboard(focusBandIndex = null) {
+            const query = listingSearch.value.trim().toLowerCase();
+            const titleMatches = listingCards.filter((card) => card.dataset.title.includes(query));
+            renderPriceChart(titleMatches, focusBandIndex);
+            const visibleCards = titleMatches.filter((card) => {
+                if (!activePriceBand) return true;
+                return priceIsInBand(parsePrice(card.dataset.price), activePriceBand);
+            });
+            const sortMode = listingSort.value;
+
+            visibleCards.sort((firstCard, secondCard) => {
+                if (sortMode === "title-asc") {
+                    return firstCard.dataset.title.localeCompare(secondCard.dataset.title);
+                }
+
+                const firstPrice = parsePrice(firstCard.dataset.price) ?? 0;
+                const secondPrice = parsePrice(secondCard.dataset.price) ?? 0;
+                return sortMode === "price-desc" ? secondPrice - firstPrice : firstPrice - secondPrice;
+            });
+
+            for (const card of listingCards) {
+                card.hidden = !visibleCards.includes(card);
+            }
+            listingGrid.append(...visibleCards);
+
+            const prices = visibleCards
+                .map((card) => parsePrice(card.dataset.price))
+                .filter((price) => price !== null)
+                .sort((firstPrice, secondPrice) => firstPrice - secondPrice);
+
+            listingCount.textContent = visibleCards.length;
+            resultsSummary.textContent = `${visibleCards.length} ${visibleCards.length === 1 ? "listing" : "listings"}`;
+            emptyState.hidden = visibleCards.length !== 0;
+
+            if (prices.length === 0) {
+                medianPrice.textContent = "--";
+                priceSpan.textContent = "--";
+                return;
+            }
+
+            const middle = Math.floor(prices.length / 2);
+            const median = prices.length % 2
+                ? prices[middle]
+                : (prices[middle - 1] + prices[middle]) / 2;
+            medianPrice.textContent = formatPrice(median);
+            priceSpan.textContent = `${formatPrice(prices[0])} - ${formatPrice(prices[prices.length - 1])}`;
+        }
+
+        for (const image of document.querySelectorAll(".listing-photo img")) {
+            image.addEventListener("error", () => {
+                image.closest(".listing-photo").classList.add("image-missing");
+                image.remove();
+            }, { once: true });
+        }
+
+        listingSearch.addEventListener("input", updateDashboard);
+        listingSort.addEventListener("change", updateDashboard);
+        updateDashboard();
+    </script>
 </body>
 </html>
