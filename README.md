@@ -1,6 +1,8 @@
 # Product Research Dashboard
 
-A local Flask Product Research Dashboard for exploring a saved eBay dataset of iPhone 14 listings. It uses the included CSV and does not scrape eBay or require an account.
+Turned a saved dataset of 347 eBay listings into an interactive dashboard with searchable product cards, price sorting, and a clickable price distribution chart. Demonstrates how business data can become easier to explore and understand.
+
+Built with Python, Flask, HTML, CSS, and JavaScript.
 
 ## Run locally
 
